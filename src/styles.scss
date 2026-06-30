@@ -1,1 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+:root {
+  --bg-primary: #0a0908;
+  --bg-panel: #15130f;
+  --bg-hover: #221f1a;
+
+  --accent-primary: #ff7a1a;
+  --accent-hover: #ffaa3d;
+  --accent-active: #cc5500;
+  --accent-glow: #fff0db;
+
+  --text-primary: #e8e3d9;
+  --text-secondary: #9a948a;
+  --text-disabled: #5c574e;
+
+  --border-subtle: #2e2a24;
+  --border-strong: #3d3833;
+}

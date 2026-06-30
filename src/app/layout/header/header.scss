@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  gap: 15px;
+  border-bottom: solid 1px var(--border-subtle);
+  padding: 10px 15px;
+}
+
+.logo {
+  max-width: 25px;
+}
+
+p {
+  background-color: var(--bg-primary);
+}
