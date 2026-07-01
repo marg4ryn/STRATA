@@ -1,11 +1,25 @@
 :host {
   display: flex;
   flex-direction: row;
-  justify-content: start;
-  align-items: center;
-  gap: 15px;
+  justify-content: space-between;
   border-bottom: solid 1px var(--border-subtle);
   padding: 10px 15px;
+}
+
+#left-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  gap: 10px;
+}
+
+#right-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  gap: 10px;
 }
 
 .logo {
@@ -14,4 +28,8 @@
 
 p {
   background-color: var(--bg-primary);
+}
+
+.icon {
+  min-width: 30px;
 }
