@@ -4,7 +4,6 @@
   flex-direction: column;
   justify-content: stretch;
   align-items: center;
-  gap: 20px;
 }
 
 .logo-container {
@@ -26,6 +25,7 @@
 }
 
 .logo {
+  padding: 12px;
   width: 100px;
   height: 180px;
 }
@@ -33,6 +33,7 @@
 form {
   display: flex;
   flex-direction: column;
+  min-height: 228px;
   gap: 12px;
   width: 100%;
   max-width: 420px;
@@ -119,6 +120,13 @@ button {
   font-size: smaller;
   list-style-position: inside;
 }
-.error-list li {
-  margin: 0;
+
+@media screen and (max-height: 800px) {
+  .logo-container {
+    flex: 0;
+  }
+
+  .form-container {
+    flex: 1;
+  }
 }
