@@ -64,6 +64,12 @@
       </div>
     </div>
 
-    <button type="submit">Start Analysis</button>
+    <button type="submit" [disabled]="analysisTargetForm().submitting()">
+      @if (analysisTargetForm().submitting()) {
+        Loading ...
+      } @else {
+        Start Analysis
+      }
+    </button>
   </form>
 </div>
