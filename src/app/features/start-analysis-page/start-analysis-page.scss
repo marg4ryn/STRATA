@@ -45,7 +45,7 @@ label {
   cursor: pointer;
 }
 
-input {
+input:not([type='checkbox']) {
   padding: 10px 14px;
   border-radius: 6px;
   border: 1px solid var(--border-subtle);
@@ -63,12 +63,40 @@ input {
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-primary) 20%, transparent);
   }
 
-  &:invalid:not(:placeholder-shown) {
+  &.invalid {
     border-color: var(--danger);
   }
 }
 
+input[type='checkbox'] {
+  accent-color: var(--accent-primary);
+  cursor: pointer;
+  margin-right: 2px;
+}
+
+input[type='date'] {
+  color: var(--text-primary);
+  cursor: text;
+
+  &::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+  }
+}
+
+.date-range-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+
+  &.expanded {
+    grid-template-rows: 1fr;
+  }
+}
+
 .date-range-container {
+  overflow: hidden;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -108,22 +136,18 @@ button {
     opacity: 0.5;
     cursor: not-allowed;
   }
-
-  &:focus-visible {
-    outline: none;
-    background-color: var(--accent-hover);
-  }
 }
 
 .error-list {
   color: var(--danger);
   font-size: smaller;
-  list-style-position: inside;
+  list-style-position: outside;
+  padding-left: 1.2em;
 }
 
 @media screen and (max-height: 800px) {
   .logo-container {
-    flex: 0;
+    flex: 1;
   }
 
   .form-container {

@@ -6,7 +6,9 @@ import {
   hidden,
   required,
   validate,
+  maxLength,
   SchemaPath,
+  debounce,
 } from '@angular/forms/signals';
 
 interface AnalysisTarget {
@@ -35,6 +37,8 @@ export class StartAnalysisPage {
   analysisTargetForm = form(
     this.analysisTargetModel,
     (schemaPath) => {
+      debounce(schemaPath.URL, 300);
+
       required(schemaPath.URL, {
         message: 'URL is required',
       });
@@ -55,6 +59,7 @@ export class StartAnalysisPage {
       });
 
       url(schemaPath.URL);
+      maxLength(schemaPath.URL, 500);
 
       afterDate(schemaPath.startDate, new Date('1970-01-01'), {
         fieldName: 'Start date',
@@ -86,6 +91,10 @@ export class StartAnalysisPage {
       },
     },
   );
+
+  isInvalid(field: () => any): boolean {
+    return field().touched() && field().invalid();
+  }
 }
 
 function url(path: SchemaPath<string>, options?: { message?: string }) {

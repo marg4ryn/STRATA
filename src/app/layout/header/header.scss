@@ -35,7 +35,6 @@
   &:focus-visible {
     color: var(--accent-primary);
     transform: scale(1.05);
-    outline: 1px solid var(--accent-primary);
   }
 }
 
@@ -76,8 +75,6 @@
   &:focus-visible {
     color: var(--accent-primary);
     transform: scale(1.05);
-    outline: 1px solid var(--accent-primary);
-    outline-offset: 2px;
   }
 }
 
