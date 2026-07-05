@@ -102,6 +102,19 @@ input[type='date'] {
   gap: 12px;
 }
 
+.collapsing {
+  animation: collapse-rows 0.3s ease forwards;
+}
+
+@keyframes collapse-rows {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 .dates-container {
   display: flex;
   flex-direction: row;

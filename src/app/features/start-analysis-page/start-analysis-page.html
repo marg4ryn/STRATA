@@ -27,8 +27,8 @@
     </label>
 
     <div class="date-range-wrapper" [class.expanded]="!analysisTargetForm.startDate().hidden()">
-      <div class="date-range-container">
-        @if (!analysisTargetForm.startDate().hidden()) {
+      @if (!analysisTargetForm.startDate().hidden()) {
+        <div class="date-range-container" animate.leave="collapsing">
           <div class="dates-container">
             <input
               type="date"
@@ -60,8 +60,8 @@
               }
             </ul>
           }
-        }
-      </div>
+        </div>
+      }
     </div>
 
     <button type="submit" [disabled]="analysisTargetForm().submitting()">
