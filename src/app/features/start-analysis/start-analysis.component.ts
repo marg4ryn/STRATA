@@ -11,7 +11,7 @@ import {
   SchemaPath,
   debounce,
 } from '@angular/forms/signals';
-import { LoggerService } from '../../core/logging/logger.service';
+import { LoggerService } from '@core/logging/logger.service';
 
 interface AnalysisTarget {
   URL: string;

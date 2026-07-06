@@ -5,7 +5,12 @@
   "compilerOptions": {
     "outDir": "./out-tsc/app",
     "rootDir": "./src",
-    "types": []
+    "types": [],
+    "paths": {
+      "@app/*": ["./src/app/*"],
+      "@env/*": ["./src/environments/*"],
+      "@core/*": ["./src/app/core/*"]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.spec.ts"],
