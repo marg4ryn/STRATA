@@ -1,5 +1,5 @@
-import { LogLevel } from '@core/logging/logger.types';
-import { Environment } from './environment.types';
+import { LogLevel } from '@app/core/logging/logger.enum';
+import { Environment } from './environment.model';
 
 export const environment: Environment = {
   production: true,

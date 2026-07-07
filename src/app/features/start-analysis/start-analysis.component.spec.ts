@@ -249,7 +249,7 @@ describe('StartAnalysisPage', () => {
   // ---------------------------------------------------------------------
   describe('form submission', () => {
     it('should call the submit action and reset the form on valid submit', async () => {
-      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const logSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
       const input = getUrlInput();
       setInputValue(input, 'https://github.com/JohnDoe/Project.git');
       await advance(300);
@@ -258,6 +258,7 @@ describe('StartAnalysisPage', () => {
       await advance(0);
 
       expect(logSpy).toHaveBeenCalledWith(
+        expect.any(String),
         expect.objectContaining({ URL: 'https://github.com/JohnDoe/Project.git' }),
       );
       expect(component.analysisTargetForm.URL().value()).toBe('');

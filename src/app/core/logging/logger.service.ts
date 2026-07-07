@@ -1,6 +1,6 @@
 import { Service } from '@angular/core';
 import { environment } from '@env/environment';
-import { LogLevel } from './logger.types';
+import { LogLevel } from './logger.enum';
 
 @Service()
 export class LoggerService {
