@@ -23,7 +23,7 @@ export class AnalysisRunPage {
     800,
   );
 
-  isRunning = this.websocket.connected;
+  isBusy = this.websocket.isBusy;
 
   runAnalysis(data: AnalysisTarget): void {
     this.logger.info(`Analysis target form accepted data: `, data);

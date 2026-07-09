@@ -1,4 +1,4 @@
-@if (!isRunning()) {
+@if (!isBusy()) {
   <app-analysis-target-form (analysisTargetData)="runAnalysis($event)"></app-analysis-target-form>
 } @else {
   <app-analysis-progress-spinner

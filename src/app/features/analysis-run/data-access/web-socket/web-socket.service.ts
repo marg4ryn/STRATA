@@ -14,7 +14,7 @@ export class WebSocketService {
 
   private socket?: WebSocket;
 
-  connected = signal<boolean>(false);
+  isBusy = signal<boolean>(false);
   progress = signal<AnalysisStatusKey | null>(null);
   result = signal<string>('');
   error = signal<string>('');
@@ -22,10 +22,10 @@ export class WebSocketService {
   connect(params?: Record<string, string>): void {
     const url = this.constructUrl(params);
 
+    this.isBusy.set(true);
     this.socket = new WebSocket(url);
 
     this.socket.onopen = () => {
-      this.connected.set(true);
       this.logger.debug('WebSocket Service opened connection');
     };
 
@@ -58,13 +58,13 @@ export class WebSocketService {
 
     this.socket.onerror = () => {
       this.error.set('Connection error');
-      this.logger.debug('WebSocket Service encountered connection error');
+      this.logger.error('WebSocket Service encountered connection error');
       this.disconnect();
     };
 
     this.socket.onclose = () => {
       this.logger.debug('WebSocket Service closed connection');
-      this.connected.set(false);
+      this.isBusy.set(false);
     };
   }
 
