@@ -1,0 +1,130 @@
+@startuml
+title "Analysis Run"
+
+actor "User" as U
+participant "Facade" as F
+participant "Lock Web API" as L
+participant "StoreService" as ST
+participant "StorageService" as STG
+participant "WebSocketService" as WS
+database "SessionStorage" as SS
+database "LocalStorage" as LS
+
+U -> F: navigate(analysis-run)
+F -> ST: resetState()
+
+alt Page reload
+    note right SS: sessionId still in SessionStorage
+    F -> L: tryToLock(sessionId)
+
+    alt lock Successful
+        F -> L: lockAnalysis(sessionId)
+        F -> WS: reconnect(sessionId)
+        WS -> ST: isBusy.set(true)
+        note right of WS: returns to progress loop
+
+    else unable to lock
+        F -> STG: deleteSession(sessionId)
+        STG -> SS: deleteSessionId(sessionId)
+        note right of WS: returns to Visit from a new tab
+    end
+
+else Visit from a new tab
+    F -> STG: getPendingAnalyses()
+    STG -> F: pendingAnalyses
+    F -> L: getLocks()
+    L -> F: locks
+
+    loop for each analysis in pendingAnalyses that is not in locks
+        F -> L: tryToLock(sessionId)
+
+        alt Unable to lock
+            note right of F: skip iteration
+
+        else Able to lock
+            F -> L: lockAnalysis(sessionId)
+            F -> U: emit(continue)
+
+            alt User resumes analysis
+                U -> F: resume()
+                F -> STG: saveSession(sessionId, startedAt, targetUrl)
+                STG -> SS: saveSessionId(sessionId)
+                F -> WS: reconnect(sessionId)
+                WS -> ST: isBusy.set(true)
+
+                alt Reconnect Successful
+                    note right of WS: returns to progress loop
+
+                else Server Error
+                    note right of WS: returns to Server Error
+                end
+
+            else User cancels analysis
+                U -> F: cancel()
+                F -> STG: deleteAnalysis(sessionId)
+                STG -> LS: deleteAnalysis(sessionId)
+                F -> L: unlockAnalysis(sessionId)
+                F -> U: emit(abort)
+            end
+        end
+    end
+end
+
+U -> F: runAnalysis()
+F -> ST: resetState()
+note left of ST: progress, result, error
+F -> F: generateSessionId()
+F -> STG: saveSession(sessionId, startedAt, targetUrl)
+STG -> SS: saveSessionId(sessionId)
+note right of SS: a1b2c3d4-...
+STG -> LS: saveSession(sessionId, startedAt, targetUrl)
+note right of LS: {"a1b2c3d4-...": { "sessionId": "a1b2c3d4-...", "startedAt": new Date(), "targetURL": "https://..." }}
+F -> L: lockAnalysis(sessionId)
+F -> WS: connect(sessionId, params)
+WS -> ST: isBusy.set(true)
+
+loop until closed
+    WS -> ST: progress.set(...)
+end
+
+alt Analysis Successful
+    WS -> WS: connection.close()
+    WS -> ST: isBusy.set(false)
+    WS -> ST: result.set(analysisId)
+    ST -> F: emit(analysisId)
+    F -> STG: deleteSession(sessionId)
+    STG -> SS: deleteSessionId(sessionId)
+    STG -> LS: deleteAnalysis(sessionId)
+    F -> L: unlockAnalysis(sessionId)
+    F -> STG: saveAnalysis(analysisId, startedAt, targetUrl)
+    STG -> LS: saveAnalysis(analysisId, startedAt, targetUrl)
+    note right of LS: LRU if > 50
+    F -> ST: resetState()
+    F -> U: emit(analysisId)
+
+else Server Error
+    WS -> WS: connection.close()
+    WS -> ST: error.set(...)
+    WS -> ST: isBusy.set(false)
+    ST -> F: emit(error)
+    F -> STG: deleteSession(sessionId)
+    STG -> SS: deleteSessionId(sessionId)
+    STG -> LS: deleteAnalysis(sessionId)
+    F -> L: unlockAnalysis(sessionId)
+    F -> ST: resetState()
+    F -> U: emit(error)
+
+else User Aborts
+    U -> F: abort()
+    F -> WS: closeConnection()    
+    WS -> WS: emit({ message: 'abort' })
+    WS -> WS: connection.close()
+    WS -> ST: isBusy.set(false)
+    F -> STG: deleteSession(sessionId)
+    STG -> SS: deleteSessionId(sessionId)
+    STG -> LS: deleteAnalysis(sessionId)
+    F -> L: unlockAnalysis(sessionId)
+    F -> ST: resetState()
+    F -> U: emit(abort)
+end
+@enduml
