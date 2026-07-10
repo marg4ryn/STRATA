@@ -107,7 +107,7 @@ describe('LoggerService', () => {
   describe('Prod Environment', () => {
     beforeEach(() => {
       environment.production = true;
-      environment.enableLogging = true;
+      environment.enableLogging = false;
       environment.logLevel = LogLevel.ERROR;
       logger = new LoggerService();
     });
