@@ -1,0 +1,12 @@
+@startuml Start New Analysis
+
+start
+:Generate sessionId;
+:Lock sessionId;
+:Save pendingAnalysis in localStorage;
+:Save sessionId in sessionStorage;
+:Connect to server;
+:Continue analysis;
+stop
+
+@enduml

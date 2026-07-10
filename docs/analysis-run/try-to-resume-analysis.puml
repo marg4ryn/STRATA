@@ -1,0 +1,36 @@
+@startuml Try To Resume Analysis
+
+start
+:Read pendingAnalyses;
+
+if (pendingAnalyses empty?) then (yes)
+    :Start new analysis;
+    stop
+endif
+
+:Query Web Locks;
+
+while (Unprocessed analysis without lock?) is (yes)
+    :Select analysis;
+    :Try to acquire lock;
+
+    if (Lock acquired?) then (yes)
+        :Ask user whether to continue analysis;
+
+        if (User wants to continue?) then (yes)
+            :Save sessionId in sessionStorage;
+            :Reconnect to sessionId;
+            :Receive last status;
+            :Continue analysis;
+            stop
+        else (no)
+            :Delete pendingAnalysis from localStorage;
+            :Release lock;
+        endif
+    endif
+endwhile (no)
+
+:Start new analysis;
+stop
+
+@enduml
