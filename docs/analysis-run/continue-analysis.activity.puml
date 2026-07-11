@@ -2,7 +2,7 @@
 
 start
 
-while (isBusy?) is (yes)
+while (Connection exists?) is (yes)
     :Update progress;
 endwhile (no)
 
@@ -11,10 +11,10 @@ switch (Termination reason)
 case (Success)
     :Emit analysisResult;
     :Save analysisResult in history;
-    :Show result;
+    :Show results;
 
 case (User abort)
-    :Send abort request to server;
+    :Send abort request;
     :Close connection;
     :Show confirmation;
 

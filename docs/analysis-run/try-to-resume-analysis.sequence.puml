@@ -1,0 +1,57 @@
+@startuml Try To Resume Analysis
+
+participant "UI" as U
+participant "Facade" as F
+participant "Orchestrator" as O
+participant "Lock Web API" as L
+participant "Notification Service" as N
+participant "Store Service" as ST
+participant "Storage Service" as STG
+participant "Web Socket Service" as WS
+participant "Server" as SRV
+
+database "Session Storage" as SS
+database "Local Storage" as LS
+
+O -> STG: read pendingAnalyses
+
+alt pendingAnalyses empty
+    note left of O: goto Start New Analysis
+
+else pendingAnalyses exist
+    O -> L: read locks
+
+    loop Unprocessed analysis without lock?
+        O -> L: lock sessionID
+
+        opt Lock acquired
+            O -> ST: showModal.set(true)
+            ST -> F: emit(showModal)
+
+            alt User wants to continue
+                O -> ST: showModal.set(false)
+                ST -> F: emit(showModal)
+                O -> STG: saveSessionId(sessionId)
+                STG -> SS: sessionId
+                O -> WS: reconnect(sessionId)
+                WS -> SRV: reconnect(sessionId)
+                SRV -> WS: progresss
+                WS -> ST: progress.set(...)
+                ST -> F: emit(progress)
+                note left of O: goto Continue Analysis
+
+            else User cancels analysis
+                O -> ST: showModal.set(false)
+                ST -> F: emit(showModal)
+                O -> STG: deleteAnalysis(sessionId)
+                STG -> LS: deleteAnalysis(sessionId)
+                O -> L: unlockAnalysis(sessionId)
+                O -> ST: resetState()
+            end
+        end
+    end
+
+   note left of O: goto Start New Analysis
+end
+
+@enduml

@@ -1,0 +1,72 @@
+@startuml Continue Analysis
+
+participant "UI" as U
+participant "Facade" as F
+participant "Orchestrator" as O
+participant "Lock Web API" as L
+participant "Notification Service" as N
+participant "Store Service" as ST
+participant "Storage Service" as STG
+participant "Web Socket Service" as WS
+participant "Server" as SRV
+
+database "Session Storage" as SS
+database "Local Storage" as LS
+
+loop Until closed
+    SRV -> WS: progress
+    WS -> ST: progress.set(...)
+    ST -> F: emit(progress)
+end
+
+alt Analysis Successful
+    SRV -> WS: result
+    SRV -> WS: connection.close()
+    WS -> ST: isBusy.set(false)
+    WS -> ST: result.set(analysisId)
+    ST -> F: emit(isBusy)
+    ST -> F: emit(analysisId)
+    ST -> O: emit(analysisId)
+    O -> N: sendMessageSuccess()
+
+else User Aborts
+    U -> F: abort()
+    F -> O: abort()
+    O -> WS: abortConnection()    
+    WS -> SRV: abort()
+    WS -> SRV: connection.close()
+    WS -> ST: isBusy.set(false)
+    ST -> F: emit(isBusy)
+    O -> N: sendMessageAbort()
+
+else Connection / Server Error
+    SRV -> WS: connection.close()
+    WS -> ST: isBusy.set(false)
+    WS -> ST: error.set(...)
+    ST -> F: emit(isBusy)
+    ST -> F: emit(error)
+    ST -> O: emit(error)
+    O -> N: sendMessageError()
+
+    alt With Retry
+        U -> F: retry()
+        F -> O: retry()
+        O -> WS: reconnect(sessionId)
+        WS -> SRV: reconnect(sessionId)
+        WS -> ST: isBusy.set(true)
+        ST -> F: emit(isBusy)
+        note left of O: goto progress loop
+
+    else Without Retry
+        U -> F: cancel()
+        F -> O: cancel()
+    end
+end
+
+O -> STG: deleteAnalysis(sessionId)
+STG -> SS: deleteSessionId(sessionId)
+STG -> LS: deleteAnalysis(sessionId)
+O -> L: unlockAnalysis(sessionId)
+O -> ST: resetState()
+
+@enduml

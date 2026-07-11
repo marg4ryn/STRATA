@@ -1,0 +1,30 @@
+@startuml Start New Analysis
+
+participant "UI" as U
+participant "Facade" as F
+participant "Orchestrator" as O
+participant "Lock Web API" as L
+participant "Store Service" as ST
+participant "Storage Service" as STG
+participant "Web Socket Service" as WS
+participant "Server" as SRV
+
+database "SessionStorage" as SS
+database "LocalStorage" as LS
+
+U -> F: startAnalysis()
+note right of F: args: URL, limitRange, startDate, endDate
+F -> O: startAnalysis()
+O -> O: generateSessionId()
+O -> L: lockAnalysis(sessionId)
+O -> STG: saveAnalysis(sessionId, startedAt, targetUrl)
+STG -> SS: sessionId
+note right of SS: "a1b2c3d4-..."
+STG -> LS: pendingAnalysis
+note left of LS: {"a1b2c3d4-...": { "sessionId": "a1b2c3d4-...", "startedAt": "...", "targetURL": "..." }}
+O -> WS: connect(sessionId, params)
+WS -> SRV: connect(sessionId, params)
+WS -> ST: isBusy.set(true)
+ST -> F: emit(isBusy)
+
+@enduml

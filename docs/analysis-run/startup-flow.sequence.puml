@@ -1,0 +1,68 @@
+@startuml Startup Flow
+
+participant "UI" as U
+participant "Facade" as F
+participant "Orchestrator" as O
+participant "Lock Web API" as L
+participant "Notification Service" as N
+participant "Store Service" as ST
+participant "Storage Service" as STG
+participant "Web Socket Service" as WS
+participant "Server" as SRV
+
+database "Session Storage" as SS
+database "Local Storage" as LS
+
+note right of U: ngOnInit
+U -> F: tryToReconnect()
+F -> O: tryToReconnect()
+O -> ST: read isBusy
+
+alt isBusy = true
+    note left of O: goto Continue Analysis
+
+else isBusy = false
+    O -> ST: resetState()
+    O -> STG: read sessionId
+
+    alt sessionId does not exist
+        note left of O: goto Try To Resume Analysis
+
+    else sessionId exists
+        O -> STG: read pendindAnalyses
+
+        alt sessionId not in pendingAnalyses
+            O -> STG: deleteSessionId(sessionId)
+            STG -> SS: deleteSessionId(sessionId)
+            note left of O: goto Try To Resume Analysis
+
+        else sessionId in pendingAnalyses
+            O -> L: read locks
+
+            alt Lock for sessionId exists
+                O -> STG: deleteSessionId(sessionId)
+                STG -> SS: deleteSessionId(sessionId)
+                note left of O: goto Try To Resume Analysis
+            
+            else sessionId available
+                O -> L: lock sessionID
+
+                alt Lock acquired
+                    O -> WS: reconnect(sessionId)
+                    WS -> SRV: reconnect(sessionId)
+                    SRV -> WS: progresss
+                    WS -> ST: progress.set(...)
+                    ST -> F: emit(progress)
+                    note left of O: goto Continue Analysis
+
+                else Lock unsuccessful
+                    O -> STG: deleteSessionId(sessionId)
+                    STG -> SS: deleteSessionId(sessionId)
+                    note left of O: goto Try To Resume Analysis
+                end
+            end
+        end
+    end
+end
+
+@enduml
