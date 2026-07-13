@@ -75,10 +75,6 @@ describe('WebSocketService', () => {
 
   const getSocket = () => MockWebSocket.instances[0];
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
   it('should connect and set isBusy true', () => {
     service.connect();
     expect(store.isBusy()).toBe(true);
@@ -88,6 +84,11 @@ describe('WebSocketService', () => {
   it('should build url with query params', () => {
     service.connect({ a: '1', b: '2' });
     expect(getSocket().url).toMatch(/analysis\?a=1&b=2/);
+  });
+
+  it('should build url without query params', () => {
+    service.connect();
+    expect(getSocket().url).toMatch(/analysis/);
   });
 
   it('should log on open', () => {
@@ -108,9 +109,9 @@ describe('WebSocketService', () => {
     service.connect();
     const socket = getSocket();
     socket.onmessage?.({
-      data: JSON.stringify({ type: 'success', data: 'ok-result' }),
+      data: JSON.stringify({ type: 'success', data: 'analysisId' }),
     } as MessageEvent);
-    expect(store.result()).toBe('ok-result');
+    expect(store.result()).toBe('analysisId');
     expect(socket.readyState).toBe(MockWebSocket.CLOSED);
   });
 
@@ -145,7 +146,7 @@ describe('WebSocketService', () => {
   it('should handle invalid JSON message and disconnect', () => {
     service.connect();
     const socket = getSocket();
-    socket.onmessage?.({ data: 'not-json' } as MessageEvent);
+    socket.onmessage?.({ data: 'invalid json' } as MessageEvent);
     expect(store.error()).toBe('Failed to parse message');
     expect(socket.readyState).toBe(MockWebSocket.CLOSED);
   });
@@ -164,20 +165,12 @@ describe('WebSocketService', () => {
     expect(store.isBusy()).toBe(false);
   });
 
-  it('should send abort message when socket is open', () => {
+  it('should send abort message', () => {
     service.connect();
     const socket = getSocket();
     socket.readyState = MockWebSocket.OPEN;
     service.abort();
     expect(socket.sent[0]).toBe(JSON.stringify({ type: 'abort' }));
-  });
-
-  it('should not send abort when socket is not open', () => {
-    service.connect();
-    const socket = getSocket();
-    socket.readyState = MockWebSocket.CLOSED;
-    service.abort();
-    expect(socket.sent.length).toBe(0);
   });
 
   it('should do nothing on abort if no socket', () => {

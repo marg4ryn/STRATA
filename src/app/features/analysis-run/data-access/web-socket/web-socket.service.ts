@@ -76,6 +76,9 @@ export class WebSocketService {
 
   abort(): void {
     if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+      this.logger.debug(
+        'WebSocket Service did not send an abort message - connection not yet opened',
+      );
       return;
     }
 
@@ -84,6 +87,7 @@ export class WebSocketService {
         type: 'abort',
       }),
     );
+    this.logger.info('WebSocket Service send an abort message ');
   }
 
   disconnect(): void {
@@ -96,14 +100,9 @@ export class WebSocketService {
     if (params) {
       const queryParams = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
-        if (value != null) {
-          queryParams.append(key, String(value));
-        }
+        queryParams.append(key, String(value));
       });
-      const queryString = queryParams.toString();
-      if (queryString) {
-        url += `?${queryString}`;
-      }
+      url += `?${queryParams.toString()}`;
     }
 
     return url;
