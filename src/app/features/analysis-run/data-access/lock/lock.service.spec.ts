@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Orchestrator } from './orchestrator';
+import { LockService } from './lock.service';
 
-describe('Orchestrator', () => {
-  let service: Orchestrator;
+describe('LockService', () => {
+  let service: LockService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Orchestrator);
+    service = TestBed.inject(LockService);
   });
 
   it('should be created', () => {
