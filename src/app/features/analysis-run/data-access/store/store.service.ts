@@ -6,12 +6,12 @@ import { LoggerService } from '@app/core/logging/logger.service';
 export class StoreService {
   private readonly logger = inject(LoggerService);
 
-  pendingAnalysis = signal<PendingAnalysis | null>(null);
-  showModal = signal<boolean>(false);
-  isBusy = signal<boolean>(false);
-  progress = signal<AnalysisStatusKey | null>(null);
-  result = signal<string | null>(null);
-  error = signal<string | null>(null);
+  readonly pendingAnalysis = signal<PendingAnalysis | null>(null);
+  readonly showModal = signal<boolean>(false);
+  readonly isBusy = signal<boolean>(false);
+  readonly progress = signal<AnalysisStatusKey | null>(null);
+  readonly result = signal<string | null>(null);
+  readonly error = signal<string | null>(null);
 
   resetState(): void {
     this.pendingAnalysis.set(null);

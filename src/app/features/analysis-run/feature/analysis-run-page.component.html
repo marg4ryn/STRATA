@@ -4,7 +4,7 @@
   ></app-analysis-target-form>
 } @else {
   <app-analysis-progress-spinner
-    [label]="label.value()"
+    [label]="debouncedLabel.value()"
     (abort)="abortAnalysis()"
   ></app-analysis-progress-spinner>
 }

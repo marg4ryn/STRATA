@@ -13,18 +13,17 @@ import { AnalysisRunFacade } from '../data-access/facade/analysis-run.facade';
 export class AnalysisRunPage {
   private readonly facade = inject(AnalysisRunFacade);
 
-  showModal = this.facade.showModal;
-  isBusy = this.facade.isBusy;
-  progress = this.facade.progress;
-  error = this.facade.error;
+  readonly showModal = this.facade.showModal;
+  readonly isBusy = this.facade.isBusy;
+  readonly progress = this.facade.progress;
+  readonly error = this.facade.error;
 
-  label = debounced(
-    computed(() => {
-      const progress = this.progress();
-      return progress ? `${AnalysisStatus[progress]}...` : 'Connecting...';
-    }),
-    800,
-  );
+  readonly label = computed(() => {
+    const progress = this.progress();
+    return progress ? `${AnalysisStatus[progress]}...` : 'Connecting...';
+  });
+
+  readonly debouncedLabel = debounced(this.label, 800);
 
   ngOnInit() {
     this.facade.tryToReconnect();
