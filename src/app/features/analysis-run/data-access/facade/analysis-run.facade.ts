@@ -1,13 +1,49 @@
 import { inject, Service, computed } from '@angular/core';
 import { StoreService } from '../store/store.service';
+import { OrchestratorService } from '../orchestrator/orchestrator.service';
+import { AnalysisTargetFormModel } from '../analysis-run.model';
 
 @Service()
 export class AnalysisRunFacade {
   private readonly store = inject(StoreService);
+  private readonly orchestrator = inject(OrchestratorService);
 
   showModal = computed(() => this.store.showModal());
   isBusy = computed(() => this.store.isBusy());
   progress = computed(() => this.store.progress());
-  analysisId = computed(() => this.store.result());
   error = computed(() => this.store.error());
+
+  startNewAnalysis(formData: AnalysisTargetFormModel): void {
+    this.orchestrator.startNewAnalysis(formData);
+  }
+
+  // attempt to resume unfinished analysis
+  tryToReconnect(): void {
+    this.orchestrator.tryToReconnect();
+  }
+
+  // actually taking up the unfinished analysis
+  resumeAnalysis(): void {
+    this.orchestrator.resumeAnalysis();
+  }
+
+  // attempt to resume analysis after an error
+  retryAnalysis(): void {
+    this.orchestrator.retryAnalysis();
+  }
+
+  // abandoning analysis after an error
+  cancelAnalysis(): void {
+    this.orchestrator.cancelAnalysis();
+  }
+
+  // abandoning a previously unfinished analysis
+  abandonAnalysis(): void {
+    this.orchestrator.abandonAnalysis();
+  }
+
+  // abandoning an ongoing analysis
+  abortAnalysis(): void {
+    this.orchestrator.abortAnalysis();
+  }
 }
