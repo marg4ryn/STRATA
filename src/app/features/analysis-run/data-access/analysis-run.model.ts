@@ -35,9 +35,3 @@ export interface PendingAnalysis {
   startedAt: number;
   target: AnalysisTarget;
 }
-
-export interface AnalysisHistoryEntry {
-  analysisId: string;
-  startedAt: number;
-  target: AnalysisTarget;
-}
