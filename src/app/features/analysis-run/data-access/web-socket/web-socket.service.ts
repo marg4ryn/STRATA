@@ -24,6 +24,7 @@ export class WebSocketService {
 
   connect(params?: Record<string, string>): void {
     const url = this.constructUrl(params);
+    this.logger.debug(`WebSocket Service constructed URL: ${url}`);
 
     this.isBusy.set(true);
     this.socket = new WebSocket(url);
@@ -35,7 +36,7 @@ export class WebSocketService {
     this.socket.onmessage = (event: MessageEvent) => {
       try {
         const message = JSON.parse(event.data) as WsMessage;
-        this.logger.info('WebSocket Service received message: ', message);
+        this.logger.info('WebSocket Service received message', message);
 
         switch (message.type) {
           case 'progress':
@@ -55,9 +56,9 @@ export class WebSocketService {
           default:
             this.logger.warn('WebSocket Service received unknown message type');
         }
-      } catch {
+      } catch (error) {
         this.error.set('Failed to parse message');
-        this.logger.error('WebSocket Service failed to parse message');
+        this.logger.error('WebSocket Service failed to parse message', error);
         this.disconnect();
       }
     };

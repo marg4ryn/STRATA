@@ -86,7 +86,7 @@ export class OrchestratorService {
     const initialPendingAnalyses = this.storage.getPendingAnalyses();
 
     if (!initialPendingAnalyses || initialPendingAnalyses.length < 1) {
-      this.logger.debug('Orchestrator did not found any pending analyses');
+      this.logger.debug('Orchestrator did not found any pending analysis');
       return;
     }
 
