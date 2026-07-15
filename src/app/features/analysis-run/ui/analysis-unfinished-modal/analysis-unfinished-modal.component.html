@@ -1,0 +1,42 @@
+<div class="modal">
+  <header class="modal__header">
+    <h2 class="modal__title">Unfinished analysis found</h2>
+  </header>
+
+  <div class="modal__body">
+    <dl class="details">
+      <div class="details__group">
+        <dt>Started at</dt>
+        <dd>{{ analysisStartDate() }}</dd>
+      </div>
+
+      <div class="details__group">
+        <dt>Target URL</dt>
+        <dd class="details__url">{{ targetURL() }}</dd>
+      </div>
+
+      @if (limitRange()) {
+        <div class="details__group">
+          <dt>Date Range</dt>
+          <dd class="details__range">
+            <span>{{ startDate() }}</span>
+            <span class="details__range-sep">–</span>
+            <span>{{ endDate() }}</span>
+          </dd>
+        </div>
+      }
+    </dl>
+  </div>
+
+  <footer class="modal__footer">
+    <button btn="secondary" (click)="abandonAnalysis()">Abandon</button>
+    <button btn="primary" (click)="resumeAnalysis()">Resume</button>
+  </footer>
+</div>
+
+@if (showModal) {
+  <app-confirm-operation-modal
+    (cancel)="onCancel()"
+    (confirm)="onConfirm()"
+  ></app-confirm-operation-modal>
+}
