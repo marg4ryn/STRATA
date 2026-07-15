@@ -1,6 +1,16 @@
-import { Component, input, output } from '@angular/core';
-import { PendingAnalysis } from '../../data-access/analysis-run.model';
+import {
+  AfterViewInit,
+  ElementRef,
+  OnDestroy,
+  Component,
+  input,
+  output,
+  inject,
+  viewChild,
+} from '@angular/core';
+import { FocusMonitor } from '@angular/cdk/a11y';
 import { ButtonDirective } from '@app/shared/button-directive/button.directive';
+import { PendingAnalysis } from '../../data-access/analysis-run.model';
 import { ConfirmOperationModal } from '@app/shared/confirm-operation-modal/confirm-operation-modal.component';
 import { InfoPanel } from '../../shared/info-panel/info-panel.component';
 
@@ -10,13 +20,25 @@ import { InfoPanel } from '../../shared/info-panel/info-panel.component';
   templateUrl: './analysis-progress-spinner.component.html',
   styleUrl: './analysis-progress-spinner.component.scss',
 })
-export class AnalysisProgressSpinner {
-  pendingAnalysis = input.required<PendingAnalysis | null>();
-  label = input<string>('');
+export class AnalysisProgressSpinner implements AfterViewInit, OnDestroy {
+  private readonly focusMonitor = inject(FocusMonitor);
 
-  abort = output<void>();
+  readonly firstButton = viewChild.required<ElementRef<HTMLButtonElement>>('firstButton');
+
+  readonly pendingAnalysis = input.required<PendingAnalysis | null>();
+  readonly label = input<string>('');
+
+  readonly abort = output<void>();
 
   showModal: boolean = false;
+
+  ngAfterViewInit(): void {
+    this.focusMonitor.focusVia(this.firstButton(), 'program');
+  }
+
+  ngOnDestroy(): void {
+    this.focusMonitor.stopMonitoring(this.firstButton());
+  }
 
   onCancel(): void {
     this.showModal = false;

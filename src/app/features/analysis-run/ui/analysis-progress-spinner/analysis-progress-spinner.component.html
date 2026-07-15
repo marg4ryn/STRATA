@@ -6,7 +6,7 @@
   </div>
   <p class="loading-label">{{ label() }}</p>
 
-  <button btn="secondary" (click)="abortAnalysis()">Abort</button>
+  <button #firstButton btn="secondary" (click)="abortAnalysis()">Abort</button>
 </div>
 
 <app-info-panel [pendingAnalysis]="pendingAnalysis()"></app-info-panel>
