@@ -1,22 +1,30 @@
 import { Component, inject, computed, debounced } from '@angular/core';
 import { AnalysisTargetForm } from '../ui/analysis-target-form/analysis-target-form.component';
-import { AnalysisProgressSpinner } from '../ui/analysis-progress-spinner/analysis-progress-spinner';
+import { AnalysisProgressSpinner } from '../ui/analysis-progress-spinner/analysis-progress-spinner.component';
+import { AnalysisErrorModal } from '../ui/analysis-error-modal/analysis-error-modal.component';
+import { AnalysisUnfinishedModal } from '../ui/analysis-unfinished-modal/analysis-unfinished-modal.component';
 import { AnalysisStatus, AnalysisTargetFormModel } from '../data-access/analysis-run.model';
 import { AnalysisRunFacade } from '../data-access/facade/analysis-run.facade';
 
 @Component({
   selector: 'app-analysis-run-page',
-  imports: [AnalysisTargetForm, AnalysisProgressSpinner],
+  imports: [
+    AnalysisTargetForm,
+    AnalysisProgressSpinner,
+    AnalysisErrorModal,
+    AnalysisUnfinishedModal,
+  ],
   templateUrl: './analysis-run-page.component.html',
   styleUrl: './analysis-run-page.component.scss',
 })
 export class AnalysisRunPage {
   private readonly facade = inject(AnalysisRunFacade);
 
-  readonly showModal = this.facade.showModal;
-  readonly isBusy = this.facade.isBusy;
+  readonly pendingAnalysis = this.facade.pendingAnalysis;
   readonly progress = this.facade.progress;
   readonly error = this.facade.error;
+  readonly isBusy = this.facade.isBusy;
+  readonly showModal = this.facade.showModal;
 
   readonly label = computed(() => {
     const progress = this.progress();
