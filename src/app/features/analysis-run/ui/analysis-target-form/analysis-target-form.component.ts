@@ -12,10 +12,11 @@ import {
   debounce,
 } from '@angular/forms/signals';
 import { AnalysisTargetFormModel } from '../../data-access/analysis-run.model';
+import { ButtonDirective } from '@app/shared/button-directive/button.directive';
 
 @Component({
   selector: 'app-analysis-target-form',
-  imports: [FormField, FormRoot],
+  imports: [FormField, FormRoot, ButtonDirective],
   templateUrl: './analysis-target-form.component.html',
   styleUrl: './analysis-target-form.component.scss',
 })

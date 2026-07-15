@@ -65,7 +65,7 @@ input:not([type='checkbox']) {
   }
 
   &.invalid {
-    border-color: var(--danger);
+    border-color: var(--danger-primary);
   }
 }
 
@@ -125,26 +125,7 @@ input[type='date'] {
 }
 
 button {
-  padding: 10px 14px;
-  border-radius: 6px;
-  border: none;
-  background-color: var(--accent-primary);
-  color: var(--text-primary);
-  font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    transform 0.15s ease;
-
-  &:hover {
-    background-color: var(--accent-hover);
-  }
-
-  &:active {
-    transform: scale(0.97);
-    background-color: var(--accent-active);
-  }
+  padding: 0.535rem 1.5rem;
 
   &:disabled {
     opacity: 0.5;
@@ -156,7 +137,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  color: var(--danger);
+  color: var(--danger-primary);
   font-size: smaller;
   list-style-position: outside;
   padding-left: 1.2em;

@@ -64,7 +64,7 @@
       }
     </div>
 
-    <button type="submit" [disabled]="analysisTargetForm().submitting()">
+    <button btn="primary" type="submit" [disabled]="analysisTargetForm().submitting()">
       @if (analysisTargetForm().submitting()) {
         Loading ...
       } @else {
