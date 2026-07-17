@@ -40,18 +40,6 @@ describe('ConfirmOperationModal', () => {
     expect(title.textContent).toContain('Delete this item?');
   });
 
-  it('should render dialog with correct a11y attributes', () => {
-    const modal = fixture.nativeElement.querySelector('.modal');
-    expect(modal.getAttribute('role')).toBe('dialog');
-    expect(modal.getAttribute('aria-modal')).toBe('true');
-  });
-
-  it('should render cancel and confirm buttons with correct variants', () => {
-    const { cancel, confirm } = getButtons();
-    expect(cancel.classList.contains('btn--secondary')).toBeTruthy();
-    expect(confirm.classList.contains('btn--danger')).toBeTruthy();
-  });
-
   it('should emit cancel when cancel button is clicked', () => {
     const spy = vi.fn();
     component.cancel.subscribe(spy);

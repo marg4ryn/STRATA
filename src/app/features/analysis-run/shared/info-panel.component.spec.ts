@@ -38,7 +38,7 @@ describe('InfoPanel', () => {
     vi.useRealTimers();
   });
 
-  function setInput(value: PendingAnalysis) {
+  function setInput(value: PendingAnalysis): void {
     fixture.componentRef.setInput('pendingAnalysis', value);
   }
 
@@ -51,11 +51,11 @@ describe('InfoPanel', () => {
     fixture.detectChanges();
     setInput(analysis);
 
-    expect(component.targetURL()).toBe('https://example.com');
-    expect(component.analysisStartDate()).toBe(new Date(42).toLocaleString());
+    expect(component.targetURL()).toBe(target.targetURL);
+    expect(component.analysisStartDate()).toBe(new Date(analysis.startedAt).toLocaleString());
     expect(component.limitRange()).toBeTruthy();
-    expect(component.startDate()).toBe(new Date('2000-01-01').toLocaleDateString());
-    expect(component.endDate()).toBe(new Date('2000-01-01').toLocaleDateString());
+    expect(component.startDate()).toBe(new Date(range.startDate).toLocaleDateString());
+    expect(component.endDate()).toBe(new Date(range.endDate).toLocaleDateString());
   });
 
   it('does not update debounced signals before 800ms', async () => {
@@ -65,8 +65,10 @@ describe('InfoPanel', () => {
     await vi.advanceTimersByTimeAsync(799);
     fixture.detectChanges();
 
-    expect(component.debouncedTargetURL.value()).not.toBe('https://example.com');
-    expect(component.debouncedAnalysisStartDate.value()).not.toBe(new Date(42).toLocaleString());
+    expect(component.debouncedTargetURL.value()).not.toBe(target.targetURL);
+    expect(component.debouncedAnalysisStartDate.value()).not.toBe(
+      new Date(analysis.startedAt).toLocaleString(),
+    );
     expect(component.debouncedLimitRange.value()).not.toBeTruthy();
     expect(component.debouncedStartDate.value()).not.toBe(
       new Date('2000-01-01').toLocaleDateString(),
@@ -83,11 +85,15 @@ describe('InfoPanel', () => {
     await vi.advanceTimersByTimeAsync(800);
     fixture.detectChanges();
 
-    expect(component.debouncedTargetURL.value()).toBe('https://example.com');
-    expect(component.debouncedAnalysisStartDate.value()).toBe(new Date(42).toLocaleString());
+    expect(component.debouncedTargetURL.value()).toBe(target.targetURL);
+    expect(component.debouncedAnalysisStartDate.value()).toBe(
+      new Date(analysis.startedAt).toLocaleString(),
+    );
     expect(component.debouncedLimitRange.value()).toBeTruthy();
-    expect(component.debouncedStartDate.value()).toBe(new Date('2000-01-01').toLocaleDateString());
-    expect(component.debouncedEndDate.value()).toBe(new Date('2000-01-01').toLocaleDateString());
+    expect(component.debouncedStartDate.value()).toBe(
+      new Date(range.startDate).toLocaleDateString(),
+    );
+    expect(component.debouncedEndDate.value()).toBe(new Date(range.endDate).toLocaleDateString());
   });
 
   it('renders target URL after debounce', async () => {
@@ -98,7 +104,7 @@ describe('InfoPanel', () => {
     fixture.detectChanges();
 
     const url = fixture.nativeElement.querySelector('.details__url');
-    expect(url.textContent).toContain('https://example.com');
+    expect(url.textContent).toContain(target.targetURL);
   });
 
   it('shows date range section when limitRange is true', async () => {
@@ -108,11 +114,9 @@ describe('InfoPanel', () => {
     await vi.advanceTimersByTimeAsync(800);
     fixture.detectChanges();
 
-    const range = fixture.nativeElement.querySelector('.details__range');
-    expect(range).toBeTruthy();
-    expect(range.textContent).toContain(
-      new Date(analysis.target.range!.startDate).toLocaleDateString(),
-    );
+    const rangeEl = fixture.nativeElement.querySelector('.details__range');
+    expect(rangeEl).toBeTruthy();
+    expect(rangeEl.textContent).toContain(new Date(range.startDate).toLocaleDateString());
   });
 
   it('does not show date range section when limitRange is false', async () => {

@@ -1,4 +1,4 @@
-import { computed, Directive, HostBinding, input } from '@angular/core';
+import { computed, Directive, input } from '@angular/core';
 
 @Directive({
   selector: 'button[btn]',
