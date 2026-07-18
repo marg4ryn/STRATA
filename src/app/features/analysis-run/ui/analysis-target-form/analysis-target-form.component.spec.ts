@@ -1,6 +1,7 @@
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+
 import { AnalysisTargetForm } from './analysis-target-form.component';
 
 describe('AnalysisTargetForm', () => {
@@ -56,9 +57,6 @@ describe('AnalysisTargetForm', () => {
     fixture.detectChanges();
   }
 
-  // ---------------------------------------------------------------------
-  // URL field validation
-  // ---------------------------------------------------------------------
   describe('URL validation', () => {
     it('should be invalid and required when empty', async () => {
       const input = getUrlInput();
@@ -75,7 +73,7 @@ describe('AnalysisTargetForm', () => {
 
     it('should be invalid for a malformed URL', async () => {
       const input = getUrlInput();
-      setInputValue(input, 'not-a-valid-url');
+      setInputValue(input, 'invalid-url');
       await advance(300);
 
       expect(component.analysisTargetForm.targetURL().invalid()).toBe(true);
@@ -88,7 +86,7 @@ describe('AnalysisTargetForm', () => {
 
     it('should be valid for a well-formed URL', async () => {
       const input = getUrlInput();
-      setInputValue(input, 'https://github.com/JohnDoe/Project.git');
+      setInputValue(input, 'https://example.com');
       await advance(300);
 
       expect(component.analysisTargetForm.targetURL().invalid()).toBe(false);
@@ -105,7 +103,7 @@ describe('AnalysisTargetForm', () => {
 
     it('should debounce validation by 300ms', async () => {
       const input = getUrlInput();
-      input.value = 'not-valid';
+      input.value = 'invalid-url';
       input.dispatchEvent(new Event('input'));
       fixture.detectChanges();
 
@@ -116,19 +114,14 @@ describe('AnalysisTargetForm', () => {
           .some((e: any) => e.kind === 'url');
 
       await advance(100);
-      // Debounce window (300ms) hasn't elapsed yet - the new value shouldn't
-      // have been validated as an invalid URL.
       expect(hasUrlError()).toBe(false);
 
-      await advance(250); // total 350ms > 300ms debounce
+      await advance(250);
       expect(hasUrlError()).toBe(true);
     });
   });
 
-  // ---------------------------------------------------------------------
-  // limitRange / date visibility & requiredness
-  // ---------------------------------------------------------------------
-  describe('limitRange toggle', () => {
+  describe('limitRange checkbox', () => {
     it('should hide and not require date fields when unchecked', () => {
       expect(component.analysisTargetForm.limitRange().value()).toBe(false);
       expect(component.analysisTargetForm.startDate().hidden()).toBe(true);
@@ -160,14 +153,11 @@ describe('AnalysisTargetForm', () => {
 
       expect(component.analysisTargetForm.startDate().hidden()).toBe(true);
       submitForm();
-      expect(component.analysisTargetForm.targetURL().invalid()).toBe(true); // still empty
+      expect(component.analysisTargetForm.targetURL().invalid()).toBe(true);
       expect(getDateInputs().length).toBe(0);
     });
   });
 
-  // ---------------------------------------------------------------------
-  // Date range validation
-  // ---------------------------------------------------------------------
   describe('date range validation', () => {
     beforeEach(() => {
       getCheckbox().click();
@@ -244,9 +234,6 @@ describe('AnalysisTargetForm', () => {
     });
   });
 
-  // ---------------------------------------------------------------------
-  // Submission behavior
-  // ---------------------------------------------------------------------
   describe('form submission', () => {
     it('should focus the first invalid control and not submit when form is invalid', () => {
       submitForm();
@@ -258,7 +245,7 @@ describe('AnalysisTargetForm', () => {
 
     it('should disable the submit button while submitting', async () => {
       const input = getUrlInput();
-      setInputValue(input, 'https://github.com/JohnDoe/Project.git');
+      setInputValue(input, 'https://example.com');
       await advance(300);
 
       const button: HTMLButtonElement = fixture.debugElement.query(
@@ -276,9 +263,6 @@ describe('AnalysisTargetForm', () => {
     });
   });
 
-  // ---------------------------------------------------------------------
-  // isInvalid() helper & error rendering
-  // ---------------------------------------------------------------------
   describe('isInvalid helper', () => {
     it('should return false when field is untouched, even if invalid', () => {
       expect(component.isInvalid(component.analysisTargetForm.targetURL)).toBe(false);

@@ -13,7 +13,7 @@
       class="analysis-form__input"
       placeholder="https://github.com/JohnDoe/Project.git"
       [formField]="analysisTargetForm.targetURL"
-      [class.analysis-form__input--invalid]="isInvalid(analysisTargetForm.targetURL)"
+      [class.invalid]="isInvalid(analysisTargetForm.targetURL)"
     />
 
     @if (analysisTargetForm.targetURL().touched() && analysisTargetForm.targetURL().invalid()) {
@@ -25,13 +25,17 @@
     }
 
     <label class="analysis-form__checkbox-label">
-      <input type="checkbox" [formField]="analysisTargetForm.limitRange" />
+      <input
+        class="analysis-form__input"
+        type="checkbox"
+        [formField]="analysisTargetForm.limitRange"
+      />
       Limit date range
     </label>
 
     <div
       class="analysis-form__date-range-wrapper"
-      [class.analysis-form__date-range-wrapper--expanded]="!analysisTargetForm.startDate().hidden()"
+      [class.expanded]="!analysisTargetForm.startDate().hidden()"
     >
       @if (!analysisTargetForm.startDate().hidden()) {
         <div class="analysis-form__date-range" animate.leave="collapsing">
@@ -40,14 +44,14 @@
               type="date"
               class="analysis-form__input"
               [formField]="analysisTargetForm.startDate"
-              [class.analysis-form__input--invalid]="isInvalid(analysisTargetForm.startDate)"
+              [class.invalid]="isInvalid(analysisTargetForm.startDate)"
             />
             <span class="analysis-form__dates-sep">–</span>
             <input
               type="date"
               class="analysis-form__input"
               [formField]="analysisTargetForm.endDate"
-              [class.analysis-form__input--invalid]="isInvalid(analysisTargetForm.endDate)"
+              [class.invalid]="isInvalid(analysisTargetForm.endDate)"
             />
           </div>
 
