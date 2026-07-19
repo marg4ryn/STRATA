@@ -6,7 +6,9 @@ import { signal } from '@angular/core';
 
 class MockWebSocket {
   static instances: MockWebSocket[] = [];
+  static CONNECTING = 0;
   static OPEN = 1;
+  static CLOSING = 2;
   static CLOSED = 3;
   readyState = MockWebSocket.OPEN;
   onopen: (() => void) | null = null;
@@ -159,6 +161,16 @@ describe('WebSocketService', () => {
     expect(socket.readyState).toBe(MockWebSocket.CLOSED);
   });
 
+  it('should handle socket error caused by abort during connecting', () => {
+    service.connect();
+    const socket = getSocket();
+    socket.readyState = MockWebSocket.CONNECTING;
+    service.abort();
+    socket.onerror?.();
+    expect(store.error()).toBeNull();
+    expect(socket.readyState).toBe(MockWebSocket.CLOSED);
+  });
+
   it('should set isBusy false on close', () => {
     service.connect();
     getSocket().onclose?.();
@@ -171,6 +183,17 @@ describe('WebSocketService', () => {
     socket.readyState = MockWebSocket.OPEN;
     service.abort();
     expect(socket.sent[0]).toBe(JSON.stringify({ type: 'abort' }));
+  });
+
+  it('should not send an abort message while disconnecting', () => {
+    service.connect();
+    const socket = getSocket();
+    socket.readyState = MockWebSocket.CLOSING;
+    service.abort();
+    expect(socket.sent.length).toBe(0);
+    expect(logger.debug).toHaveBeenCalledWith(
+      'WebSocket Service did not send an abort message - socket already closing/closed',
+    );
   });
 
   it('should do nothing on abort if no socket', () => {

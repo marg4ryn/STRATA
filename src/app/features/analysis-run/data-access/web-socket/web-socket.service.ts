@@ -27,8 +27,8 @@ export class WebSocketService {
     const url = this.constructUrl(params);
     this.logger.debug(`WebSocket Service constructed URL: ${url}`);
 
-    this.intentionalClose = false;
     this.isBusy.set(true);
+    this.intentionalClose = false;
     this.socket = new WebSocket(url);
 
     this.socket.onopen = () => {
