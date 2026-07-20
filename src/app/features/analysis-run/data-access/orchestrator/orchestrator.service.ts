@@ -77,7 +77,7 @@ export class OrchestratorService {
     if (!filteredAnalyses || filteredAnalyses.length < 1) {
       this.logger.debug('Orchestrator found an ongoing analysis, but another card took over');
       this.storage.deleteSessionId();
-      this.locker.unlock(sessionId);
+      await this.locker.unlock(sessionId);
       return this.tryToResumeAnalysis();
     }
 
@@ -120,7 +120,7 @@ export class OrchestratorService {
         this.logger.debug(
           `Orchestrator could not take over the analysis with sessionId: ${sessionId} - analysis belongs to another tab`,
         );
-        this.locker.unlock(sessionId);
+        await this.locker.unlock(sessionId);
         continue;
       }
 
@@ -160,18 +160,18 @@ export class OrchestratorService {
       `Orchestrator received a request to abandon analysis with sessionId: ${sessionId}`,
     );
     // sendMessageCancel()
-    this.clearData();
+    await this.clearData();
     return await this.tryToResumeAnalysis();
   }
 
-  abortAnalysis(): void {
+  async abortAnalysis(): Promise<void> {
     const sessionId = this.store.pendingAnalysis()!.sessionId;
     this.logger.info(
       `Orchestrator received a request to abort analysis with sessionId: ${sessionId}`,
     );
     this.webSocket.abort();
     // sendMessageCancel()
-    this.clearData();
+    await this.clearData();
   }
 
   retryAnalysis(): void {
@@ -183,14 +183,14 @@ export class OrchestratorService {
     this.webSocket.connect({ sessionId: sessionId });
   }
 
-  cancelAnalysis(): void {
+  async cancelAnalysis(): Promise<void> {
     const sessionId = this.store.pendingAnalysis()!.sessionId;
     this.logger.info(
       `Orchestrator received a request to cancel analysis with sessionId: ${sessionId}`,
     );
     this.store.error.set(null);
     // sendMessageCancel()
-    this.clearData();
+    await this.clearData();
   }
 
   private constructPendingAnalysis(formData: AnalysisTargetFormModel): PendingAnalysis {
@@ -236,12 +236,12 @@ export class OrchestratorService {
     return params;
   }
 
-  private clearData(): void {
+  private async clearData(): Promise<void> {
     const sessionId = this.store.pendingAnalysis()!.sessionId;
     this.logger.info(`Orchestrator deleted data of analysis with sessionId: ${sessionId}`);
     this.storage.deleteSessionId();
     this.storage.deletePendingAnalysis(sessionId);
-    this.locker.unlock(sessionId);
+    await this.locker.unlock(sessionId);
     this.store.resetAnalysisState();
   }
 }

@@ -59,7 +59,7 @@ export class LockService {
     }
   }
 
-  unlock(sessionId: string): void {
+  async unlock(sessionId: string): Promise<void> {
     const release = this.releasers.get(sessionId);
 
     if (!release) {
@@ -70,7 +70,7 @@ export class LockService {
     }
 
     try {
-      release();
+      await release();
       this.logger.info(`Lock Service unlocked sessionId: ${sessionId}`);
     } catch (err) {
       this.logger.error(`Lock Service failed to release lock for sessionId: ${sessionId}`, err);
